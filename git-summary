@@ -56,6 +56,10 @@ git_summary() {
     # Use provided path, or default to pwd
     local target=$(readlink -f ${1:-`pwd`})
     local repos=$(list_repos $target)
+    
+    if [[ -z $repos ]]; then
+    	exit
+    fi
 
     # We compute the repo names and branch names here so we can
     # compute their maximum lengths and lay things out nicely.  This
@@ -144,6 +148,7 @@ repo_branch () {
 # Given a path to a folder containing some git repos, compute the
 # names of the folders which actually do contain git repos.
 list_repos () {
+	# https://stackoverflow.com/questions/23356779/how-can-i-store-find-command-result-as-arrays-in-bash
 	git_directories=()
 	while IFS=  read -r -d $'\0'; do
 		git_directories+=("$REPLY")
