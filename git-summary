@@ -144,7 +144,16 @@ repo_branch () {
 # Given a path to a folder containing some git repos, compute the
 # names of the folders which actually do contain git repos.
 list_repos () {
-    find $1 -maxdepth 2 -type 'd' -name ".git" -print0 | xargs -0 -L1 dirname -z | xargs -0 -L1 basename
+	git_directories=()
+	while IFS=  read -r -d $'\0'; do
+		git_directories+=("$REPLY")
+	done < <(find $1 -maxdepth 2 -type 'd' -name ".git" -print0)
+	
+	for i in ${git_directories[*]}; do
+		if [[ ! -z $i ]]; then
+    		dirname -z $i | xargs -0 -L1 basename
+    	fi
+    done
 }
 
 
