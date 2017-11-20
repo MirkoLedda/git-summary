@@ -13,6 +13,7 @@ Checks what repos has been changed in your workspace.
 # Credits
 Thanks for the amazing people who made the original git-summary bash script
 * [mzabriskie](https://github.com/mzabriskie)
+* [CycleMost](https://github.com/CycleMost)
 * [lmj0011](https://github.com/lmj0011)
 * [gimbo](https://github.com/gimbo)
 * [zartc](https://github.com/zartc)
