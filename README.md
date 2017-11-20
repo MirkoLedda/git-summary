@@ -1,6 +1,9 @@
 # git-summary
 Checks what repos has been changed in your workspace.
 
+# Install
+`sudo cp git-summary /usr/local/bin`
+
 # Usage
 * cd into a directory where you have multiple git repos you wanna check. For example: `cd Workspace`
 * `git summary` (Checks the remotes to see if they have changes you do not or vica versa)
