@@ -18,12 +18,16 @@ usage() {
 
           - the folder name
           - the currently checked out branch
-          - a short status string showing whether there are:
-              - untracked files
-              - uncommitted new files
-              - uncommitted changes
-              - unpulled commits for the current branch
-              - unpushed commits for the current branch
+          - a short 2-column status string showing whether there are:
+              * Local Changes:
+                - untracked files                          "?_"
+                - uncommitted new files                    "+_"
+                - uncommitted changes                      "M_"
+                - (nothing)                                " _"
+              * Remote Changes:
+                - unpulled commits for the current branch  "_v"
+                - unpushed commits for the current branch  "_^"
+                - (nothing)                                "_ "
 
         Arguments:
 
