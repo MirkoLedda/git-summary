@@ -1,21 +1,32 @@
 # git-summary
-Checks what repos has been changed in your workspace.
+Summarizes multiple git repository status within a directory.
 
-# Install
-* `sudo apt install gawk` (find the alternative command if you're not using ubuntu)
-* `sudo cp git-summary /usr/local/bin`
+# Requirements
+
+## Linux
+* `sudo apt-get install gawk`
+
+## MacOS
+* `brew install coreutils`
 
 # Usage
-* cd into a directory where you have multiple git repos you wanna check. For example: `cd Workspace`
-* `git summary` (Checks the remotes to see if they have changes you do not or vica versa)
-* `git summary -l` (Only checks for local changes and thus is much faster)
+Call `git-status.sh [options]` from within a directory containing git repos to get their current status.
+
+Options are listed below:
+* **-h**: Print help and exit.
+* **-l**: Local status lookup. Checks only local changes which is faster as there is no need to fetch the remote.
+* **-d**: Deep lookup. Will look for any git repos within the entire current directory tree. Can be slowish for large trees.
+
+General usage is as follow
 
 # Credits
-Thanks for the amazing people who made the original git-summary bash script
+A big thanks to the amazing people that wrote the original versions of git-summary:
+
+* **Forked from** [lordadamson](https://github.com/lordadamson/git-summary)
 * [mzabriskie](https://github.com/mzabriskie)
 * [CycleMost](https://github.com/CycleMost)
 * [lmj0011](https://github.com/lmj0011)
 * [gimbo](https://github.com/gimbo)
 * [zartc](https://github.com/zartc)
 
-It all started [here](https://gist.github.com/mzabriskie/6631607) :heart:
+It all started [here](https://gist.github.com/mzabriskie/6631607) !

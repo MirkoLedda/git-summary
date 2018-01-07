@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# git-summary - summarise git repos at some path
+# git-summary - summarize git repos at some path
 #
 # Forked from https://github.com/lordadamson/git-summary
 #
@@ -9,9 +9,9 @@
 
 usage() {
     sed 's/^        //' <<EOF
-        git-summary - summarise git repos at some path
+        git-summary - summarize git repos at some path
 
-        Usage: git-summary [-h] [-l] [-d] [path]
+        Usage: git-summary.sh [-h] [-l] [-d] [path]
 
         Given a path to a folder containing one or more git repos,
         print a status summary table showing, for each repo:
@@ -88,7 +88,7 @@ git_summary() {
 
     local f
     for f in $repos ; do
-        summarise_one_git_repo $f "$template" "$local_only" >&1
+        summarize_one_git_repo $f "$template" "$local_only" >&1
     done
 }
 
@@ -122,7 +122,7 @@ print_header () {
 }
 
 
-summarise_one_git_repo () {
+summarize_one_git_repo () {
 
     local f=$1
     local template=$2
