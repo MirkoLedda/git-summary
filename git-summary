@@ -2,9 +2,9 @@
 
 # git-summary - summarise git repos at some path
 #
-# Adapted from https://gist.github.com/lmj0011/1a8dd1e376234ac7bf0fba2748ecdd0f
+# Forked from https://github.com/lordadamson/git-summary
 #
-# Andy Gimblett, March 2017
+# Freely distributed under the MIT license. 2018@MirkoLedda
 
 
 usage() {
@@ -44,8 +44,9 @@ usage() {
 EOF
 }
 
-
 git_summary() {
+
+    detect_OS
 
     local local_only=0
     local opt
@@ -58,9 +59,9 @@ git_summary() {
     shift $((OPTIND-1))
 
     # Use provided path, or default to pwd
-    local target=$(readlink -f ${1:-`pwd`})
+    local target=$(${readlink_cmd} -f ${1:-`pwd`})
     local repos=$(list_repos $target)
-    
+
     if [[ -z $repos ]]; then
     	exit
     fi
@@ -87,6 +88,19 @@ git_summary() {
         summarise_one_git_repo "$template" "$local_only" >&1
     done
     cd $here
+}
+
+# Autodetect the OS
+detect_OS() {
+  if [ "$(uname)" == "Darwin" ]; then  # macOS
+    readlink_cmd="greadlink"
+    dirname_cmd="gdirname"
+    gawk_cmd="awk"
+  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then  # Linux
+    readlink_cmd="readlink"
+    dirname_cmd="dirname"
+    gawk_cmd="gawk"
+  fi
 }
 
 
@@ -157,10 +171,10 @@ list_repos () {
 	while IFS=  read -r -d $'\0'; do
 		git_directories+=("$REPLY")
 	done < <(find $1 -maxdepth 2 -type 'd' -name ".git" -print0)
-	
+
 	for i in ${git_directories[*]}; do
 		if [[ ! -z $i ]]; then
-    		dirname -z $i | xargs -0 -L1 basename
+    		$dirname_cmd -z $i | xargs -0 -L1 basename
     	fi
     done
 }
@@ -178,7 +192,7 @@ repo_branches () {
 
 
 max_len () {
-    echo "$1" | gawk '{ print length }' | sort -rn | head -1
+    echo "$1" | $gawk_cmd '{ print length }' | sort -rn | head -1
 }
 
 
