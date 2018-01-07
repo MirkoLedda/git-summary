@@ -6,6 +6,11 @@
 #
 # Freely distributed under the MIT license. 2018@MirkoLedda
 
+# Colorcode
+GREEN='\e[1;32m'
+ORANGE='\e[1;33m'
+RED='\e[1;31m'
+NC='\e[0m' # No Color
 
 usage() {
     sed 's/^        //' <<EOF
@@ -47,6 +52,7 @@ usage() {
 EOF
 }
 
+# Main
 git_summary() {
 
     detect_OS
@@ -82,8 +88,7 @@ git_summary() {
     local branches=$(repo_branches $target)
     local max_repo_len=$(max_len "$repos")
     local max_branch_len=$(max_len "$branches")
-    local template=$(printf "%%-%ds  %%-%ds  %%-s\\n" $max_repo_len $max_branch_len)
-
+    local template=$(printf "%%b%%-%ds  %%-%ds  %%-5s" $max_repo_len $max_branch_len)
     print_header "$template" $max_repo_len $max_branch_len
 
     local f
@@ -110,7 +115,7 @@ print_header () {
     local template="$1"
     local max_repo_len=$2
     local max_branch_len=$3
-    printf "$template\n" repo branch state
+    printf "$template\n" $NC repo branch state
     print_divider () {
         printf '=%.0s' $(seq 1 $max_repo_len)
         printf '  '
@@ -130,17 +135,9 @@ summarize_one_git_repo () {
 
     local app_name=$f
     local branch_name=`git -C $f symbolic-ref HEAD | sed -e "s/^refs\/heads\///"`
-    printf "$template" $app_name $branch_name >&1
+    local numState=0
 
-    local state=""
-    local untracked=`git -C $f status | grep Untracked -c`
-    local new_files=`git -C $f status | grep "new file" -c`
-    local modified=`git -C $f status | grep modified -c`
-    state+=$([ $untracked -ne 0 ] && echo "?" || echo " ")
-    state+=$([ $new_files -ne 0 ] && echo "+" || echo " ")
-    state+=$([ $modified  -ne 0 ] && echo "M" || echo " ")
-    echo -n "$state" >&1
-
+    ### Check remote state
     local rstate=""
     local has_upstream=`git -C $f rev-parse --abbrev-ref @{u} 2> /dev/null | wc -l`
     if [ $has_upstream -ne 0 ] ; then
@@ -150,13 +147,60 @@ summarize_one_git_repo () {
         # Unpulled and unpushed on *current* branch
         local unpulled=`git -C $f log --pretty=format:'%h' ..@{u} | wc -c`
         local unpushed=`git -C $f log --pretty=format:'%h' @{u}.. | wc -c`
-        rstate+=$([ $unpulled -ne 0 ] && echo "v" || echo " ")
-        rstate+=$([ $unpushed -ne 0 ] && echo "^" || echo " ")
-    else
-        rstate+="--"
-    fi
-    echo "$rstate" >&1
 
+        if [ $unpulled -ne 0 ]; then
+          rstate="${rstate}v"
+          numState=1
+        else
+          rstate="${rstate} "
+        fi
+
+        if [ $unpushed -ne 0 ]; then
+          rstate="${rstate}^"
+          numState=1
+        else
+          rstate="${rstate} "
+        fi
+
+    else
+        rstate="--"
+    fi
+
+    ### Check local state
+    local state=""
+    local untracked=`git -C $f status | grep Untracked -c`
+    local new_files=`git -C $f status | grep "new file" -c`
+    local modified=`git -C $f status | grep modified -c`
+
+    if [ $untracked -ne 0 ]; then
+      state="${state}?"
+      numState=2
+    else
+      state="${state} "
+    fi
+
+    if [ $new_files -ne 0 ]; then
+      state="${state}+"
+      numState=2
+    else
+      state="${state} "
+    fi
+
+    if [ $modified  -ne 0 ]; then
+      state="${state}M"
+      numState=2
+    else
+      state="${state} "
+    fi
+
+    ### Print to stdout
+    if [ $numState -eq 0 ]; then
+      printf "$template\n" $GREEN $app_name $branch_name "$state$rstate" >&1
+    elif [ $numState -eq 1 ]; then
+      printf "$template\n" $ORANGE $app_name $branch_name "$state$rstate" >&1
+    elif [ $numState -eq 2 ]; then
+      printf "$template\n" $RED $app_name $branch_name "$state$rstate" >&1
+    fi
 }
 
 
