@@ -21,7 +21,7 @@ Options are listed below:
 A big thanks to the amazing people that wrote the original versions of git-summary:
 
 * **Forked from** [lordadamson](https://github.com/lordadamson/git-summary)
-* [@mzabriskie](https://github.com/mzabriskie) (Posted the original idea posted [here](https://gist.github.com/mzabriskie/6631607))
+* [mzabriskie](https://github.com/mzabriskie) (Posted the original idea posted [here](https://gist.github.com/mzabriskie/6631607))
 * [CycleMost](https://github.com/CycleMost)
 * [lmj0011](https://github.com/lmj0011)
 * [gimbo](https://github.com/gimbo)
