@@ -9,6 +9,10 @@
 
 git-summary is a bash script that will neatly list the current status of any git repos it founds within a  directory or your entire system.
 
+## Screenshot
+
+<img src="screenshot.png" width="60%">
+
 ## Requirements
 ### Linux
 * `sudo apt-get install gawk`
