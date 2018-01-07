@@ -1,7 +1,13 @@
 # git-summary
-Did you ever forgot what is going on with your local git repos? Like, where they actually are located? If you made changes to repos that you did not commit or push? or if you are a few commits behind `origin/master`?
+If you ever experienced one of the following situations, `git-summary` is for you.
 
-All Github users will experience that one way or another and `git-summary` is here at the rescue! This `bash` script will neatly list the status of all git repos found within a directory.
+* I don't remember where some of my repositories are...
+* Did I forgot to push that commit?
+* Do I have a repo in my system that is outdated?
+* Did someone pushed new commits to `origin/master` in one of my repos?
+* Did I commit that quick change I made before the pizza delivery guy rang my door?
+
+`git-summary` is a `bash` script that will neatly list the status of all git repos it founds within a specific directory or your entire system.
 
 ## Requirements
 ### Linux
@@ -12,21 +18,27 @@ All Github users will experience that one way or another and `git-summary` is he
 
 ## Installation
 ### Via aliasing
-A clean way to use `git-summary` is to clone this repo somewhere on your system and alias it so you can call the command `git-summary` from any directory. Add this line to `~\.bashrc` with `<PATH>` being the path to the cloned repo:
+A clean way to use `git-summary` is to clone this repo and alias the script. To do so, add the following line to `~\.bashrc`:
 
 ```
 alias git-summary='<PATH>/git-summary/git-summary'
 ```
 
-> Don't worry, if you forget where you cloned this repo, you will be able to easily find it with `git-status` :wink:
+> `<PATH>` is the path to the cloned repo. Don't worry, if you ever forget where you cloned this repo, you will be able to easily find it with `git-status` :wink:
 
 ### Via binary lookup
 If you don't like cloning directories, you can simply copy `git-summary` in `/usr/local/bin`.
 
 ## Usage
-Call `git-summary [options]` to get a summary of all git repo within the current folder.
+General usage:
 
-Available options are listed below:
+```
+git-summary [options] path
+```
+
+Note that `path` is optional and the current directory will be used if left blank.
+
+### Options
 * **-h**: Print help and exit.
 * **-l**: Local status lookup. Checks only local changes which is faster as there is no need to fetch the remote.
 * **-d**: Deep lookup. Will look for any git repos within the entire current directory tree. Can be slowish for large trees.
