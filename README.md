@@ -7,9 +7,7 @@
 * Did someone pushed new commits to `origin/master` in one of my repos?
 * Did I commit that quick change I made before the pizza delivery guy rang my door?
 
-git-summary is a bash script that will neatly list the current status of any git repos it founds within a  directory or your entire system.
-
-## Screenshot
+git-summary is a bash script that will neatly list the current status of any git repos it founds within a  directory or your entire system. See the example screenshot below:
 
 <img src="screenshot.png" width="60%">
 
