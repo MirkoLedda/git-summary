@@ -146,7 +146,7 @@ summarize_one_git_repo () {
     local has_upstream=`git -C $f rev-parse --abbrev-ref @{u} 2> /dev/null | wc -l`
     if [ $has_upstream -ne 0 ] ; then
         if [ $local_only -eq 0 ] ; then
-            git fetch -q &> /dev/null
+            git -C $f fetch -q &> /dev/null
         fi
         # Unpulled and unpushed on *current* branch
         local unpulled=`git -C $f log --pretty=format:'%h' ..@{u} | wc -c`
