@@ -45,8 +45,8 @@ git-summary [options] path
 * **-l**: Local summary lookup. Checks only local changes which is faster as there is no need to fetch the remote.
 * **-d**: Deep lookup. Will look for any git repos within the entire current directory tree. Can be slowish for large trees.
 
-## Additional scripts
-Currently, `git-summary` does not list multiple branches. However, for single repos [`git-branch-status`](https://github.com/bill-auger/git-branch-status) does this beautifully.
+## Branch status
+Currently, `git-summary` does not list multiple branches per repo. However, for single repos [`git-branch-status`](https://github.com/bill-auger/git-branch-status) does this beautifully.
 
 ## Credits
 A big thanks :metal: to the amazing people that wrote the original versions of `git-summary`:
