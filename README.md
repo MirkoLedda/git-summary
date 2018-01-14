@@ -20,7 +20,7 @@ git-summary is a bash script that will neatly list the current status of any git
 
 ## Installation
 ### Via aliasing
-A clean way to use `git-summary` is to clone this repo and alias the script. To do so, add the following line to `~\.bashrc`:
+Clone this repo and alias the script. To do so, add the following line to `~\.bashrc`:
 
 ```
 alias git-summary='<PATH>/git-summary/git-summary'
@@ -28,8 +28,8 @@ alias git-summary='<PATH>/git-summary/git-summary'
 
 > `<PATH>` is the path to the cloned repo. Don't worry, if you ever forget where you cloned this repo, you will be able to easily find it with `git-summary` :wink:
 
-### Via binary lookup
-If you don't like cloning directories, you can simply copy `git-summary` in `/usr/local/bin`.
+### Via executable lookup
+Copy `git-summary` in `/usr/local/bin`.
 
 ## Usage
 General usage:
@@ -38,12 +38,15 @@ General usage:
 git-summary [options] path
 ```
 
-Note that `path` is optional and the current directory will be used if left blank.
+`path` is optional and the current directory will be used if left blank.
 
 ### Options
 * **-h**: Print help and exit.
 * **-l**: Local summary lookup. Checks only local changes which is faster as there is no need to fetch the remote.
 * **-d**: Deep lookup. Will look for any git repos within the entire current directory tree. Can be slowish for large trees.
+
+## Additional scripts
+Currently, `git-summary` does not list multiple branches. However, for single repos [`git-branch-status`](https://github.com/bill-auger/git-branch-status) does this beautifully.
 
 ## Credits
 A big thanks :metal: to the amazing people that wrote the original versions of `git-summary`:
