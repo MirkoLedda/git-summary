@@ -172,9 +172,9 @@ summarize_one_git_repo () {
 
     ### Check local state
     local state=""
-    local untracked=`git -C $f status | grep Untracked -c`
-    local new_files=`git -C $f status | grep "new file" -c`
-    local modified=`git -C $f status | grep modified -c`
+    local untracked=`LC_ALL=C git -C $f status | grep Untracked -c`
+    local new_files=`LC_ALL=C git -C $f status | grep "new file" -c`
+    local modified=`LC_ALL=C git -C $f status | grep modified -c`
 
     if [ $untracked -ne 0 ]; then
       state="${state}?"
@@ -256,3 +256,4 @@ max_len () {
 
 
 git_summary $@
+
