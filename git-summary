@@ -254,6 +254,7 @@ max_len () {
     echo "$1" | $gawk_cmd '{ print length }' | sort -rn | head -1
 }
 
+trap "printf '$NC'" EXIT
 
 git_summary $@
 
