@@ -103,10 +103,17 @@ git_summary() {
 # Autodetect the OS
 detect_OS() {
   if [ "$(uname)" == "Darwin" ]; then  # macOS
+    OS=Darwin
     readlink_cmd="greadlink"
     dirname_cmd="gdirname"
     gawk_cmd="awk"
   elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then  # Linux
+    OS=Linux
+    readlink_cmd="readlink"
+    dirname_cmd="dirname"
+    gawk_cmd="gawk"
+  elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]; then  # Cygwin
+    OS=CYGWIN
     readlink_cmd="readlink"
     dirname_cmd="dirname"
     gawk_cmd="gawk"
