@@ -110,6 +110,9 @@ detect_OS() {
     readlink_cmd="readlink"
     dirname_cmd="dirname"
     gawk_cmd="gawk"
+  else
+    echo "Cannot identify OS."
+    exit 1
   fi
 }
 
