@@ -59,6 +59,7 @@ EOF
 git_summary() {
 
     detect_OS
+    detect_Git4Windows
 
     local local_only=0
     local opt
@@ -124,6 +125,23 @@ detect_OS() {
   fi
 }
 
+GIT4WINDOWS=1
+
+detect_Git4Windows() {
+    if [[ "$OS" == "CYGWIN" && "$(git --version)" == *"windows"* ]]; then
+       GIT4WINDOWS=0
+  fi
+}
+
+gitC() {
+    local ldir=$1; shift;
+    if [ $GIT4WINDOWS -eq 0 ]; then
+       git -C "$(cygpath -w $ldir)" "$@"
+    else
+       git -C "$ldir" "$@"
+    fi
+}
+
 
 print_header () {
     local template="$1"
@@ -151,19 +169,19 @@ summarize_one_git_repo () {
     local local_only=$3
 
     local app_name=$f
-    local branch_name=`git -C $f symbolic-ref HEAD | sed -e "s/^refs\/heads\///"`
+    local branch_name=`gitC $f symbolic-ref HEAD | sed -e "s/^refs\/heads\///"`
     local numState=0
 
     ### Check remote state
     local rstate=""
-    local has_upstream=`git -C $f rev-parse --abbrev-ref @{u} 2> /dev/null | wc -l`
+    local has_upstream=`gitC $f rev-parse --abbrev-ref @{u} 2> /dev/null | wc -l`
     if [ $has_upstream -ne 0 ] ; then
         if [ $local_only -eq 0 ] ; then
-            git -C $f fetch -q &> /dev/null
+            gitC $f fetch -q &> /dev/null
         fi
         # Unpulled and unpushed on *current* branch
-        local unpulled=`git -C $f log --pretty=format:'%h' ..@{u} | wc -c`
-        local unpushed=`git -C $f log --pretty=format:'%h' @{u}.. | wc -c`
+        local unpulled=`gitC $f log --pretty=format:'%h' ..@{u} | wc -c`
+        local unpushed=`gitC $f log --pretty=format:'%h' @{u}.. | wc -c`
 
         if [ $unpulled -ne 0 ]; then
           rstate="${rstate}v"
@@ -185,9 +203,9 @@ summarize_one_git_repo () {
 
     ### Check local state
     local state=""
-    local untracked=`LC_ALL=C git -C $f status | grep Untracked -c`
-    local new_files=`LC_ALL=C git -C $f status | grep "new file" -c`
-    local modified=`LC_ALL=C git -C $f status | grep modified -c`
+    local untracked=`LC_ALL=C gitC $f status | grep Untracked -c`
+    local new_files=`LC_ALL=C gitC $f status | grep "new file" -c`
+    local modified=`LC_ALL=C gitC $f status | grep modified -c`
 
     if [ $untracked -ne 0 ]; then
       state="${state}?"
@@ -223,7 +241,7 @@ summarize_one_git_repo () {
 
 # Given the path to a git repo, compute its current branch name.
 repo_branch () {
-    git -C $1 symbolic-ref HEAD | sed -e "s/^refs\/heads\///"
+    gitC "$1" symbolic-ref HEAD | sed -e "s/^refs\/heads\///"
 }
 
 
