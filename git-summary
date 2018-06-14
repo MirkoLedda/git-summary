@@ -6,6 +6,8 @@
 #
 # Freely distributed under the MIT license. 2018@MirkoLedda
 
+set -eu
+
 # Colorcode
 GREEN='\e[0;32m'
 ORANGE='\e[0;33m'
