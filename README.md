@@ -11,6 +11,8 @@ git-summary is a bash script that will neatly list the current status of any git
 
 <img src="screenshot.png" width="60%">
 
+**Currently supported operating systems:** Linux, MacOS and Cygwin
+
 ## Requirements
 ### Linux
 * `sudo apt-get install gawk`
@@ -44,12 +46,13 @@ git-summary [options] path
 * **-h**: Print help and exit.
 * **-l**: Local summary lookup. Checks only local changes which is faster as there is no need to fetch the remote.
 * **-d**: Deep lookup. Will look for any git repos within the entire current directory tree. Can be slowish for large trees.
+* **-q**: Quiet mode. Will only print outdated repos. (Credits to [ruricolist](https://github.com/ruricolist))
 
 ## Branch status
 Currently, `git-summary` does not list multiple branches per repo. However, for single repos [`git-branch-status`](https://github.com/bill-auger/git-branch-status) does this beautifully.
 
 ## Credits
-A big thanks :metal: to the amazing people that wrote the original versions of `git-summary`:
+A big thanks :metal: to the amazing people that contributed to the original versions of `git-summary`:
 
 * **Forked from** [lordadamson](https://github.com/lordadamson/git-summary)
 * [mzabriskie](https://github.com/mzabriskie) (Posted the original idea [here](https://gist.github.com/mzabriskie/6631607))
