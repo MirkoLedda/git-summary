@@ -77,7 +77,7 @@ git_summary() {
             l) local_only=1 ;;    # Will skip "git fetch"
             d) deeplookup=1 ;;
             q) quiet=1 ;;
-	    s) sequential=1 ;;    # run sequentially
+            s) sequential=1 ;;    # run sequentially
         esac
     done
     shift $((OPTIND-1))
@@ -108,11 +108,11 @@ git_summary() {
 
     local f
     for f in $repos ; do
-	if [ $sequential -eq 0 ] ; then
-	    summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1 &  # multiple bg jobs
-	else
-	    summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1    # sequentially
-	fi
+        if [ $sequential -eq 0 ] ; then
+            summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1 &  # multiple bg jobs
+        else
+            summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1    # sequentially
+        fi
         (( repo_count+=1 ))
     done
     wait
