@@ -284,7 +284,7 @@ list_repos () {
 
 	while IFS=  read -r -d $'\0'; do
 		git_directories+=("$REPLY")
-	done < <($find_cmd 2>/dev/null)
+	done < <($find_cmd | sort -z 2>/dev/null)
 
 	for i in ${git_directories[*]}; do
 		if [[ ! -z $i ]]; then
