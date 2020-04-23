@@ -52,6 +52,8 @@ usage() {
           -q    Print nothing for repos that are up to date. Also print
                 a final tally.
 
+          -s	Run sequentially, do not spawn multiple parallel background jobs
+
           path  Path to folder containing git repos; if omitted, the
                 current working directory is used.
 
@@ -68,12 +70,14 @@ git_summary() {
     local opt
     local deeplookup=0
     local quiet=0
-    while getopts "hldq" opt; do
+    local sequential=0
+    while getopts "hldqs" opt; do
         case "${opt}" in
             h) usage ; exit 1 ;;
             l) local_only=1 ;;    # Will skip "git fetch"
             d) deeplookup=1 ;;
             q) quiet=1 ;;
+            s) sequential=1 ;;    # run sequentially
         esac
     done
     shift $((OPTIND-1))
@@ -104,7 +108,11 @@ git_summary() {
 
     local f
     for f in $repos ; do
-        summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1 &
+        if [ $sequential -eq 0 ] ; then
+            summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1 &  # multiple bg jobs
+        else
+            summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1    # sequentially
+        fi
         (( repo_count+=1 ))
     done
     wait
@@ -276,7 +284,7 @@ list_repos () {
 
 	while IFS=  read -r -d $'\0'; do
 		git_directories+=("$REPLY")
-	done < <($find_cmd 2>/dev/null)
+	done < <($find_cmd | sort -z 2>/dev/null)
 
 	for i in ${git_directories[*]}; do
 		if [[ ! -z $i ]]; then
