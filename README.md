@@ -64,3 +64,4 @@ A big thanks :metal: to the amazing people that contributed to the original vers
 
 Additional thanks go to:
 * [ruricolist](https://github.com/ruricolist) - Cygwin support and quiet mode.
+* [romainreignier](https://github.com/romainreignier) and [tobiasw1](https://github.com/tobiasw1) - Sequencial mode and output sorting.
