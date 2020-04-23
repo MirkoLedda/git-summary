@@ -47,7 +47,7 @@ git-summary [options] path
 * **-l**: Local summary lookup. Checks only local changes which is faster as there is no need to fetch the remote.
 * **-d**: Deep lookup. Look for any git repos within the entire current directory tree. Can be slowish for large trees.
 * **-q**: Quiet mode. Only print outdated repos.
-* **-s**: Sort the ouput. (Runs sequentially to avoid race conditions).
+* **-s**: Sorted output. (Slower as it runs sequentially to avoid race conditions).
 
 ## Branch status
 Currently, `git-summary` does not list multiple branches per repo. However, for single repos [`git-branch-status`](https://github.com/bill-auger/git-branch-status) does this beautifully.
@@ -64,4 +64,4 @@ A big thanks :metal: to the amazing people that contributed to the original vers
 
 Additional thanks go to:
 * [ruricolist](https://github.com/ruricolist) - Cygwin support and quiet mode.
-* [romainreignier](https://github.com/romainreignier) and [tobiasw1](https://github.com/tobiasw1) - Sequencial mode and output sorting.
+* [romainreignier](https://github.com/romainreignier) and [tobiasw1](https://github.com/tobiasw1) - Sorted output.

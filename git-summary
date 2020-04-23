@@ -52,7 +52,7 @@ usage() {
           -q    Print nothing for repos that are up to date. Also print
                 a final tally.
 
-          -s	Run sequentially, do not spawn multiple parallel background jobs
+          -s	Sort the ouput. (Runs sequentially to avoid race conditions)
 
           path  Path to folder containing git repos; if omitted, the
                 current working directory is used.
@@ -77,7 +77,7 @@ git_summary() {
             l) local_only=1 ;;    # Will skip "git fetch"
             d) deeplookup=1 ;;
             q) quiet=1 ;;
-            s) sequential=1 ;;    # run sequentially
+            s) sort=1 ;;    # Sort the output
         esac
     done
     shift $((OPTIND-1))
@@ -108,10 +108,10 @@ git_summary() {
 
     local f
     for f in $repos ; do
-        if [ $sequential -eq 0 ] ; then
-            summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1 &  # multiple bg jobs
+        if [ $sort -eq 0 ] ; then
+            summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1 &  # parallelized - first come first served stdout
         else
-            summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1    # sequentially
+            summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1  # sequential - sorted stdout
         fi
         (( repo_count+=1 ))
     done
