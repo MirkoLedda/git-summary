@@ -70,7 +70,7 @@ git_summary() {
     local opt
     local deeplookup=0
     local quiet=0
-    local sequential=0
+    local sort=0
     while getopts "hldqs" opt; do
         case "${opt}" in
             h) usage ; exit 1 ;;
