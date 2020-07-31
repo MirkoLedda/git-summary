@@ -277,9 +277,9 @@ list_repos () {
 
   local find_cmd
   if [ $deeplookup -eq 0 ]; then
-    find_cmd="find $1 -maxdepth 2 -type d -name .git -print0"
+    find_cmd="find -L $1 -maxdepth 2 -type d -name .git -print0"
   else
-    find_cmd="find $1 -type d -name .git -print0"
+    find_cmd="find -L $1 -type d -name .git -print0"
   fi
 
 	while IFS=  read -r -d $'\0'; do
