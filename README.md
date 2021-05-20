@@ -12,13 +12,17 @@ git-summary is a bash script that will neatly list the current status of any git
 <img src="screenshot.png" width="60%">
 
 ## Requirements
-**Currently supported operating systems:** Linux, MacOS and Cygwin
+**Currently supported operating systems:** Linux, MacOS and Cygwin, containers (alpine based) on Google Cloud Platform - Container Optimised OS (Chromium OS)
 
 ### Linux
 * `sudo apt-get install gawk`
 
 ### MacOS
 * `brew install coreutils`
+
+### in Container on Google Cloud Platform - Container Optimised OS (alpine based containers)
+xargs in Chromium OS does not support -L option, findutils puts an xargs with support for -L
+* `apk add gawk, findutils`
 
 ## Installation
 ### Via aliasing
