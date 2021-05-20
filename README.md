@@ -22,7 +22,7 @@ git-summary is a bash script that will neatly list the current status of any git
 
 ### in Container on Google Cloud Platform - Container Optimised OS (alpine based containers)
 xargs in Chromium OS does not support -L option, findutils puts an xargs with support for -L
-* `apk add gawk, findutils`
+* `apk add gawk findutils`
 
 ## Installation
 ### Via aliasing
