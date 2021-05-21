@@ -131,10 +131,17 @@ detect_OS() {
     dirname_cmd="gdirname"
     gawk_cmd="awk"
   elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then  # Linux
-    OS=Linux
-    readlink_cmd="readlink"
-    dirname_cmd="dirname"
-    gawk_cmd="gawk"
+    if [[ $(cat /proc/version) == *"Chromium OS"* ]]; then
+      OS=Linux
+      readlink_cmd="readlink"
+      dirname_cmd="dirname_zero"
+      gawk_cmd="gawk"
+    else
+      OS=Linux
+      readlink_cmd="readlink"
+      dirname_cmd="dirname"
+      gawk_cmd="gawk"
+    fi
   elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]; then  # Cygwin
     OS=CYGWIN
     readlink_cmd="readlink"
@@ -147,6 +154,11 @@ detect_OS() {
 }
 
 GIT4WINDOWS=1
+
+#  `dirname -z` does not exist on  Chromium OS (Google Cloud Platform - Container Optimised OS)
+dirname_zero(){
+    printf '%b' $(dirname $2)'\0'
+}
 
 detect_Git4Windows() {
     if [[ "$OS" == "CYGWIN" && "$(git --version)" == *"windows"* ]]; then
