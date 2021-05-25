@@ -12,7 +12,12 @@ git-summary is a bash script that will neatly list the current status of any git
 <img src="screenshot.png" width="60%">
 
 ## Requirements
-**Currently supported operating systems:** Linux, MacOS and Cygwin, containers (alpine based) on Google Cloud Platform - Container Optimised OS (Chromium OS)
+**Currently supported operating systems:** 
+
+* Linux
+* MacOS
+* Cygwin
+* Alpine based containers on Google Cloud Platform - Container Optimised OS (Chromium OS)
 
 ### Linux
 * `sudo apt-get install gawk`
@@ -20,22 +25,24 @@ git-summary is a bash script that will neatly list the current status of any git
 ### MacOS
 * `brew install coreutils`
 
-### in Container on Google Cloud Platform - Container Optimised OS (alpine based containers)
-xargs in Chromium OS does not support -L option, findutils puts an xargs with support for -L
+### Alpine based containers on Google Cloud Platform (Chromium OS)
 * `apk add gawk findutils`
 
-## Installation
-### Via aliasing
-Clone this repo and alias the script. To do so, add the following line to `~\.bashrc`:
+> xargs in Chromium OS does not support -L option, findutils puts an xargs with support for -L
+
+## Installation (on Linux-based machines)
+
+### Via aliasing - Preferred method
+Clone this repo somewhere and alias the script by adding this line to `~\.bashrc` (modify `$PATH` to point to the location of the cloned repo on your machine):
 
 ```
 alias git-summary='<PATH>/git-summary/git-summary'
 ```
 
-> `<PATH>` is the path to the cloned repo. Don't worry, if you ever forget where you cloned this repo, you will be able to easily find it with `git-summary` :wink:
-
 ### Via executable lookup
 Copy `git-summary` in `/usr/local/bin`.
+
+> Note that this will prevent direct git updates made to the script.
 
 ## Usage
 General usage:
@@ -69,3 +76,5 @@ A big thanks :metal: to the amazing people that contributed to the original vers
 Additional thanks go to:
 * [ruricolist](https://github.com/ruricolist) - Cygwin support and quiet mode.
 * [romainreignier](https://github.com/romainreignier) and [tobiasw1](https://github.com/tobiasw1) - Sorted output.
+* [timendum](https://github.com/timendum) - Symlink support.
+* [auphofBSF](https://github.com/auphofBSF) - Alpine based containers support.
