@@ -125,7 +125,12 @@ git_summary() {
 
 # Autodetect the OS
 detect_OS() {
-  if [ "$(uname)" == "Darwin" ]; then  # macOS
+  if [ "$(uname)" == "SunOS" ]; then  # macOS                                                                                                                
+    OS=SunOS                                                                                                                                                 
+    readlink_cmd="greadlink"                                                                                                                                 
+    dirname_cmd="gdirname"
+    gawk_cmd="awk"
+  elif [ "$(uname)" == "Darwin" ]; then  # macOS
     OS=Darwin
     readlink_cmd="greadlink"
     dirname_cmd="gdirname"
