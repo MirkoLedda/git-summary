@@ -125,7 +125,7 @@ git_summary() {
 
 # Autodetect the OS
 detect_OS() {
-  if [ "$(uname)" == "SunOS" ]; then  # macOS                                                                                                                
+  if [ "$(uname)" == "SunOS" ]; then  # SunOS (solaris/smartos/illumos)
     OS=SunOS                                                                                                                                                 
     readlink_cmd="greadlink"                                                                                                                                 
     dirname_cmd="gdirname"
