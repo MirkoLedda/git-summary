@@ -125,23 +125,24 @@ git_summary() {
 
 # Autodetect the OS
 detect_OS() {
-  if [ "$(uname)" == "SunOS" ]; then  # SunOS (solaris/smartos/illumos)
-    OS=SunOS                                                                                                                                                 
-    readlink_cmd="greadlink"                                                                                                                                 
-    dirname_cmd="gdirname"
-    gawk_cmd="awk"
-  elif [ "$(uname)" == "Darwin" ]; then  # macOS
+
+  if [ "$(uname)" == "Darwin" ]; then  # macOS
     OS=Darwin
     readlink_cmd="greadlink"
     dirname_cmd="gdirname"
     gawk_cmd="awk"
-  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then  # Linux
-    if [[ $(cat /proc/version) == *"Chromium OS"* ]]; then
+  elif [ "$(uname)" == "SunOS" ]; then  # SunOS (solaris/smartos/illumos)
+    OS=SunOS                                                                                                                                                 
+    readlink_cmd="greadlink"                                                                                                                                 
+    dirname_cmd="gdirname"
+    gawk_cmd="awk"
+  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then  # Linux-based system
+    if [[ $(cat /proc/version) == *"Chromium OS"* ]]; then  # Chromium OS
       OS=Linux
       readlink_cmd="readlink"
       dirname_cmd="dirname_zero"
       gawk_cmd="gawk"
-    else
+    else  # Vanilla Linux
       OS=Linux
       readlink_cmd="readlink"
       dirname_cmd="dirname"
@@ -153,7 +154,8 @@ detect_OS() {
     dirname_cmd="dirname"
     gawk_cmd="gawk"
   else
-    echo "Cannot identify OS."
+    echo "Oups, I cannot identify your current OS."
+    echo "Please open a ticket or a pull request so we can add your OS to the list of supported systems."
     exit 1
   fi
 }
@@ -329,4 +331,3 @@ max_len () {
 trap "printf '$NC'" EXIT
 
 git_summary $@
-
