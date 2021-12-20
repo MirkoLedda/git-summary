@@ -52,7 +52,7 @@ usage() {
           -q    Print nothing for repos that are up to date. Also print
                 a final tally.
 
-          -s	Sort the ouput. (Runs sequentially to avoid race conditions)
+          -s	Sort the output. (Runs sequentially to avoid race conditions)
 
           path  Path to folder containing git repos; if omitted, the
                 current working directory is used.
