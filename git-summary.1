@@ -1,0 +1,50 @@
+.TH GIT-SUMMARY 1 2023-04-13 git-summary ""
+.SH NAME
+GIT-SUMMARY - summarize the status of a collection of Git repositories
+.SH SYNOPSIS
+.B git-summary [-h] [-d] [-l] [-q] [-s] [path]
+.SH DESCRIPTION
+.P
+git-summary displays a table on the terminal summarizing the status of multiple
+Git repositories.
+If the given path is within a Git repository, then only information for that
+repository is shown.
+Otherwise (the path is not in a Git repository), subdirectories of this
+directory that are Git repositories are chosen.
+The default path if none is given is the current directory.
+.P
+Before displaying any information on a repository,
+.B git fetch
+is run to update remote information.
+.P
+Displayed information includes:
+.P
+- The repository location on disk.
+.br
+- The current branch name.
+.br
+- Presence of uncommitted changes.
+.br
+- Presence of untracked files.
+.br
+- Presence of unpushed and unpulled changes, if the current branch is tracking
+an upstream branch.
+.SH OPTIONS
+.TP
+-h
+Display a help message showing how to use the program.
+.TP
+-d
+Deep lookup, search the full directory tree for Git repositories.
+By default, only subdirectories immediately below the given one are checked.
+.TP
+-l
+Local operation only, do not fetch.
+.TP
+-q
+Quiet mode, only print outdated repositories.
+.TP
+-s
+Sorted output, display repositories in sorted order.
+By default, repositories are checked in parallel and may appear in any order.
+This mode slows down operation as it serializes fetching of remotes.
