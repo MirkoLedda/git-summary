@@ -100,9 +100,18 @@ git_summary() {
     # output to stdout incrementally.
 
     local branches=$(repo_branches $target)
-    local max_repo_len=$(max_len "$repos")
-    local max_branch_len=$(max_len "$branches")
-    local template=$(printf "%%b%%-%ds  %%-%ds  %%-5s" $max_repo_len $max_branch_len)
+    local max_repo_len=$(max_len "$repos"$'\n'"Repository")       # Include header 'Repository' in case repo name is shorter.
+    local longest_branch_name=$(max_len "$branches"$'\n'"Branch") # Include header 'Branch' in case branch name is shorter (e.g. main)
+    if command -v $tput_cmd &> /dev/null
+    then
+	local COLUMNS=$(${tput_cmd})
+	local available_branch_space=$(($COLUMNS - $max_repo_len - 10)) # If we have tput, adapt to terminal
+    else
+	local available_branch_space=$longest_branch_name # If we don't have tput, allow full width (old behaviour)
+    fi
+
+    local max_branch_len=$(( $available_branch_space < $longest_branch_name ? $available_branch_space : $longest_branch_name ))
+    local template=$(printf "%%b%%-%ds  %%-%d.%ds  %%5s" $max_repo_len $max_branch_len $max_branch_len) # template that truncates branch names to fit terminal width
     print_header "$template" $max_repo_len $max_branch_len
 
     local repo_count=0
@@ -131,12 +140,14 @@ detect_OS() {
     OS=Darwin
     readlink_cmd="greadlink"
     realpath_cmd="echo" # TODO implement me to avoid absolute paths
+    tput_cmd="echo 80" # TODO implement me to get actual terminal width
     dirname_cmd="gdirname"
     gawk_cmd="awk"
   elif [ "$(uname)" == "SunOS" ]; then  # SunOS (solaris/smartos/illumos)
     OS=SunOS                                                                                                                                                 
     readlink_cmd="greadlink"                                                                                                                                 
     realpath_cmd="echo" # TODO implement me to avoid absolute paths
+    tput_cmd="echo 80" # TODO implement me to get actual terminal width
     dirname_cmd="gdirname"
     gawk_cmd="awk"
   elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then  # Linux-based system
@@ -144,12 +155,14 @@ detect_OS() {
       OS=Linux
       readlink_cmd="readlink"
       realpath_cmd="realpath --relative-to=`pwd`"
+      tput_cmd="tput cols"
       dirname_cmd="dirname_zero"
       gawk_cmd="gawk"
     else  # Vanilla Linux
       OS=Linux
       readlink_cmd="readlink"
       realpath_cmd="realpath --relative-to=`pwd`"
+      tput_cmd="tput cols"
       dirname_cmd="dirname"
       gawk_cmd="gawk"
     fi
@@ -157,6 +170,7 @@ detect_OS() {
     OS=CYGWIN
     readlink_cmd="readlink"
     realpath_cmd="realpath --relative-to=`pwd`"
+    tput_cmd="tput cols"
     dirname_cmd="dirname"
     gawk_cmd="gawk"
   else
