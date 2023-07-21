@@ -84,6 +84,7 @@ git_summary() {
 
     # Use provided path, or default to pwd
     local target=$(${readlink_cmd} -f ${1:-`pwd`})
+    target=$(${realpath_cmd} $target)
     local repos=$(list_repos $target $deeplookup)
 
     if [[ -z $repos ]]; then
@@ -129,28 +130,33 @@ detect_OS() {
   if [ "$(uname)" == "Darwin" ]; then  # macOS
     OS=Darwin
     readlink_cmd="greadlink"
+    realpath_cmd="echo" # TODO implement me to avoid absolute paths
     dirname_cmd="gdirname"
     gawk_cmd="awk"
   elif [ "$(uname)" == "SunOS" ]; then  # SunOS (solaris/smartos/illumos)
     OS=SunOS                                                                                                                                                 
     readlink_cmd="greadlink"                                                                                                                                 
+    realpath_cmd="echo" # TODO implement me to avoid absolute paths
     dirname_cmd="gdirname"
     gawk_cmd="awk"
   elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then  # Linux-based system
     if [[ $(cat /proc/version) == *"Chromium OS"* ]]; then  # Chromium OS
       OS=Linux
       readlink_cmd="readlink"
+      realpath_cmd="realpath --relative-to=`pwd`"
       dirname_cmd="dirname_zero"
       gawk_cmd="gawk"
     else  # Vanilla Linux
       OS=Linux
       readlink_cmd="readlink"
+      realpath_cmd="realpath --relative-to=`pwd`"
       dirname_cmd="dirname"
       gawk_cmd="gawk"
     fi
   elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]; then  # Cygwin
     OS=CYGWIN
     readlink_cmd="readlink"
+    realpath_cmd="realpath --relative-to=`pwd`"
     dirname_cmd="dirname"
     gawk_cmd="gawk"
   else
