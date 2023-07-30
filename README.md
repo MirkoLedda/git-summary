@@ -48,6 +48,7 @@ git-summary [options] path
 * **-d**: Deep lookup. Look for any git repos within the entire current directory tree. Can be slowish for large trees.
 * **-q**: Quiet mode. Only print outdated repos.
 * **-s**: Sorted output. (Slower as it runs sequentially to avoid race conditions).
+* **-f**: Print full repo paths instead of relative ones.
 
 ## Branch status
 Currently, `git-summary` does not list multiple branches per repo. However, for single repos [`git-branch-status`](https://github.com/bill-auger/git-branch-status) does this beautifully.
@@ -68,3 +69,4 @@ Additional thanks go to:
 * [timendum](https://github.com/timendum) - Symlink support.
 * [auphofBSF](https://github.com/auphofBSF) - Alpine based containers support.
 * [gaige](https://github.com/gaige) - SunOS support.
+* [PontusPih](https://github.com/PontusPih) - Relative repo paths.
