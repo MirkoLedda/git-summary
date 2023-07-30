@@ -2,9 +2,9 @@
 
 # git-summary - summarize git repos at some path
 #
-# Forked from https://github.com/lordadamson/git-summary
+# Originally forked from https://github.com/lordadamson/git-summary
 #
-# Freely distributed under the MIT license. 2018@MirkoLedda
+# Freely distributed under the MIT license. 2023@MirkoLedda
 
 set -eu
 
@@ -15,16 +15,21 @@ RED='\e[0;31m'
 PURPLE='\e[0;35m'
 NC='\e[0m' # No Color
 
+# Headers
+HEADER_REPO="Repository"
+HEADER_BRANCH="Branch"
+HEADER_STATE="State"
+
 usage() {
     sed 's/^        //' <<EOF
         git-summary - summarize git repos at some path
 
-        Usage: git-summary.sh [-h] [-l] [-d] [-q] [path]
+        Usage: git-summary.sh [-h] [-l] [-d] [-q] [-f] [path]
 
         Given a path to a folder containing one or more git repos,
         print a status summary table showing, for each repo:
 
-          - the folder name
+          - the repo path
           - the currently checked out branch
           - a short 2-column status string showing whether there are:
               * Local Changes:
@@ -54,6 +59,8 @@ usage() {
 
           -s	Sort the output. (Runs sequentially to avoid race conditions)
 
+	  -f    Print full repo path names instead of relative ones
+
           path  Path to folder containing git repos; if omitted, the
                 current working directory is used.
 
@@ -71,21 +78,28 @@ git_summary() {
     local deeplookup=0
     local quiet=0
     local sort=0
-    while getopts "hldqs" opt; do
+    local full_path=0
+    while getopts "hldqsf" opt; do
         case "${opt}" in
             h) usage ; exit 1 ;;
             l) local_only=1 ;;    # Will skip "git fetch"
             d) deeplookup=1 ;;
             q) quiet=1 ;;
             s) sort=1 ;;    # Sort the output
+            f) full_path=1 ;;  # Use full repo paths
         esac
     done
     shift $((OPTIND-1))
 
-    # Use provided path, or default to pwd
+    # Use provided path, or default to pwd.
+    # Here we also decide if we want relative or full path names printouts.
     local target=$(${readlink_cmd} -f ${1:-`pwd`})
-    target=$(${realpath_cmd} $target)
-    local repos=$(list_repos $target $deeplookup)
+    if [ $full_path -eq 0 ] && command -v realpath >/dev/null && command -v python >/dev/null ]]; then 
+	local rtarget=$(get_relative_path $target)
+    else
+	local rtarget=$target
+    fi
+    local repos=$(list_repos $rtarget $deeplookup)
 
     if [[ -z $repos ]]; then
     	exit
@@ -99,29 +113,39 @@ git_summary() {
     # whole bunch of repos.  Doing it like this allows us to write the
     # output to stdout incrementally.
 
-    local branches=$(repo_branches $target)
-    local max_repo_len=$(max_len "$repos"$'\n'"Repository")       # Include header 'Repository' in case repo name is shorter.
-    local longest_branch_name=$(max_len "$branches"$'\n'"Branch") # Include header 'Branch' in case branch name is shorter (e.g. main)
-    if command -v $tput_cmd &> /dev/null
+    local header_space_repo=${#HEADER_REPO}
+    local header_space_branch=${#HEADER_BRANCH}
+    local header_space_state=${#HEADER_STATE}
+
+    local longest_repo_name=$(max_len "$repos")
+    local space_repo=$(( $longest_repo_name < $header_space_repo ? $header_space_repo : $longest_repo_name ))
+    
+    local branches=$(repo_branches $rtarget)
+    local longest_branch_name=$(max_len "$branches")
+    local longest_branch_name=$(( $longest_branch_name < $header_space_branch ? $header_space_branch : $longest_branch_name ))  # Factor in the header
+    
+    if command -v tput >/dev/null && eval 'tput cols' >/dev/null 2>&1;
     then
-	local COLUMNS=$(${tput_cmd})
-	local available_branch_space=$(($COLUMNS - $max_repo_len - 10)) # If we have tput, adapt to terminal
+	# If we have tput, adapt to terminal
+	local TERM_COLUMNS=$(tput cols)
+	local space_branch=$(( $TERM_COLUMNS - $space_repo - $header_space_state - 4))  # The 4 is the spaces between columns
+	local space_branch=$(( $space_branch < $header_space_branch ? $header_space_branch : $space_branch ))
+	local space_branch=$(( $space_branch > $longest_branch_name ? $longest_branch_name : $space_branch ))  # If this is commented then prompt will be full terminal width
     else
-	local available_branch_space=$longest_branch_name # If we don't have tput, allow full width (old behaviour)
+	local space_branch=$longest_branch_name # If we don't have tput, allow full width
     fi
 
-    local max_branch_len=$(( $available_branch_space < $longest_branch_name ? $available_branch_space : $longest_branch_name ))
-    local template=$(printf "%%b%%-%ds  %%-%d.%ds  %%5s" $max_repo_len $max_branch_len $max_branch_len) # template that truncates branch names to fit terminal width
-    print_header "$template" $max_repo_len $max_branch_len
+    local template=$(printf "%%b%%-%ds  %%-%d.%ds  %%-%ds" $space_repo $space_branch $space_branch $header_space_state) # template that truncates branch names to fit terminal width
+    print_header "$template" $space_repo $space_branch $header_space_state
 
     local repo_count=0
 
-    local f
-    for f in $repos ; do
+    local repo
+    for repo in $repos ; do
         if [ $sort -eq 0 ] ; then
-            summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1 &  # parallelized - first come first served stdout
+            summarize_one_git_repo $repo "$template" "$local_only" "$quiet" >&1 &  # parallelized - FIFO stdout
         else
-            summarize_one_git_repo $f "$template" "$local_only" "$quiet" >&1  # sequential - sorted stdout
+            summarize_one_git_repo $repo "$template" "$local_only" "$quiet" >&1  # sequential - sorted stdout
         fi
         (( repo_count+=1 ))
     done
@@ -139,38 +163,28 @@ detect_OS() {
   if [ "$(uname)" == "Darwin" ]; then  # macOS
     OS=Darwin
     readlink_cmd="greadlink"
-    realpath_cmd="echo" # TODO implement me to avoid absolute paths
-    tput_cmd="echo 80" # TODO implement me to get actual terminal width
     dirname_cmd="gdirname"
     gawk_cmd="awk"
   elif [ "$(uname)" == "SunOS" ]; then  # SunOS (solaris/smartos/illumos)
     OS=SunOS                                                                                                                                                 
     readlink_cmd="greadlink"                                                                                                                                 
-    realpath_cmd="echo" # TODO implement me to avoid absolute paths
-    tput_cmd="echo 80" # TODO implement me to get actual terminal width
     dirname_cmd="gdirname"
     gawk_cmd="awk"
   elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then  # Linux-based system
     if [[ $(cat /proc/version) == *"Chromium OS"* ]]; then  # Chromium OS
       OS=Linux
       readlink_cmd="readlink"
-      realpath_cmd="realpath --relative-to=`pwd`"
-      tput_cmd="tput cols"
       dirname_cmd="dirname_zero"
       gawk_cmd="gawk"
     else  # Vanilla Linux
       OS=Linux
       readlink_cmd="readlink"
-      realpath_cmd="realpath --relative-to=`pwd`"
-      tput_cmd="tput cols"
       dirname_cmd="dirname"
       gawk_cmd="gawk"
     fi
   elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]; then  # Cygwin
     OS=CYGWIN
     readlink_cmd="readlink"
-    realpath_cmd="realpath --relative-to=`pwd`"
-    tput_cmd="tput cols"
     dirname_cmd="dirname"
     gawk_cmd="gawk"
   else
@@ -207,17 +221,18 @@ print_header () {
     local template="$1"
     local max_repo_len=$2
     local max_branch_len=$3
+    local max_state_len=$4
     print_divider () {
         printf '=%.0s' $(seq 1 $max_repo_len)
         printf '  '
         printf '=%.0s' $(seq 1 $max_branch_len)
         printf '  '
-        printf '=%.0s' $(seq 1 5)
+        printf '=%.0s' $(seq 1 $max_state_len)
         printf '\n'
     };
 
     echo
-    printf "$template\n" $NC Repository Branch State
+    printf "$template\n" $NC $HEADER_REPO $HEADER_BRANCH $HEADER_STATE
     print_divider
 }
 
@@ -346,6 +361,20 @@ repo_branches () {
 
 max_len () {
     echo "$1" | $gawk_cmd '{ print length }' | sort -rn | head -1
+}
+
+
+# Function to get the relative path of a file or directory
+get_relative_path() {
+  local target="$1"
+  local base=$(pwd)
+
+  # Convert paths to absolute paths
+  local target_absolute=$(realpath "$target")
+  local base_absolute=$(realpath "$base")
+
+  # Use Python to calculate the relative path
+  python -c "import os.path; print(os.path.relpath('$target_absolute', '$base_absolute'))"
 }
 
 trap "printf '$NC'" EXIT
