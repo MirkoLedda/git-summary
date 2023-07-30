@@ -94,7 +94,7 @@ git_summary() {
     # Use provided path, or default to pwd.
     # Here we also decide if we want relative or full path names printouts.
     local target=$(${readlink_cmd} -f ${1:-`pwd`})
-    if [ $full_path -eq 0 ] && command -v realpath >/dev/null && command -v python >/dev/null ]]; then 
+    if [ $full_path -eq 0 ] && command -v realpath >/dev/null && command -v python >/dev/null ; then 
 	local rtarget=$(get_relative_path $target)
     else
 	local rtarget=$target
