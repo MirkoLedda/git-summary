@@ -250,8 +250,7 @@ summarize_one_git_repo () {
 
     ### Check remote state
     local rstate=""
-    local has_upstream=`gitC $f rev-parse --abbrev-ref @{u} 2> /dev/null | wc -l`
-    if [ $has_upstream -ne 0 ] ; then
+    if $(gitC $f rev-parse --verify --quiet --abbrev-ref @{u} > /dev/null); then
         if [ $local_only -eq 0 ] ; then
             gitC $f fetch -q &> /dev/null
         fi
