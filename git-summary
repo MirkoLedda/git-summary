@@ -31,16 +31,15 @@ usage() {
 
           - the repo path
           - the currently checked out branch
-          - a short 2-column status string showing whether there are:
+          - a short 5-column status string showing whether there are:
               * Local Changes:
-                - untracked files                          "?_"
-                - uncommitted new files                    "+_"
-                - uncommitted changes                      "M_"
-                - (nothing)                                " _"
+                - untracked files                          "?    "
+                - uncommitted new files                    " +   "
+                - uncommitted changes                      "  M  "
+                - unpushed commits for the current branch  "   ^ "
+                - no remote or no upstream branch          "   --"
               * Remote Changes:
-                - unpulled commits for the current branch  "_v"
-                - unpushed commits for the current branch  "_^"
-                - (nothing)                                "_ "
+                - unpulled commits for the current branch  "    v"
 
         Arguments:
 
@@ -259,13 +258,6 @@ summarize_one_git_repo () {
         local unpulled=`gitC $f log --pretty=format:'%h' ..@{u} | wc -c`
         local unpushed=`gitC $f log --pretty=format:'%h' @{u}.. | wc -c`
 
-        if [ $unpulled -ne 0 ]; then
-          rstate="${rstate}v"
-          numState=1
-        else
-          rstate="${rstate} "
-        fi
-
         if [ $unpushed -ne 0 ]; then
           rstate="${rstate}^"
           numState=1
@@ -273,6 +265,12 @@ summarize_one_git_repo () {
           rstate="${rstate} "
         fi
 
+        if [ $unpulled -ne 0 ]; then
+          rstate="${rstate}v"
+          numState=1
+        else
+          rstate="${rstate} "
+        fi
     else
         rstate="--"
     fi
